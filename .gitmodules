@@ -1,0 +1,3 @@
+[submodule "src/wiimote"]
+	path = src/wiimote
+	url = https://github.com/lellopastellone/FukkitWiiBall.git

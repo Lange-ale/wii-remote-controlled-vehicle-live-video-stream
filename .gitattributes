@@ -1,0 +1,3 @@
+# Gli script devono restare con fine riga LF per girare sul Raspberry Pi
+*.sh text eol=lf
+*.py text eol=lf

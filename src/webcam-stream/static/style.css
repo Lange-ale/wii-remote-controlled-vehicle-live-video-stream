@@ -1,0 +1,386 @@
+/* ── Reset & Base ─────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #08080a;
+  overflow: hidden;
+  user-select: none;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #e0e0e0;
+}
+
+/* ── Background pattern (replaces plain black) ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(239,68,68,0.03) 0%, transparent 70%),
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Subtle noise texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+/* ── Video ────────────────────────────────────── */
+#vid {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  z-index: 0;
+  border-radius: 2px;
+  box-shadow:
+    0 0 80px rgba(0,0,0,0.8),
+    0 0 1px rgba(255,255,255,0.1);
+}
+
+/* ── Vignette ─────────────────────────────────── */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ── Scanline effect ──────────────────────────── */
+.scanline {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
+}
+
+/* Moving scan bar */
+.scanline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.015), transparent);
+  animation: scan 6s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: -60px; }
+  100% { top: 100vh; }
+}
+
+/* ── Overlay bars ─────────────────────────────── */
+.bar-top, .bar-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  pointer-events: none;
+}
+
+.bar-top {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  padding-bottom: 24px;
+}
+
+.bar-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  padding-top: 24px;
+}
+
+.bar-top > *, .bar-bottom > * {
+  pointer-events: auto;
+}
+
+/* ── LIVE badge ───────────────────────────────── */
+.badge-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  animation: pulse-slow 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.08);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.live-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #f87171;
+  text-transform: uppercase;
+}
+
+/* ── Status pill ──────────────────────────────── */
+.status-pill {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.10);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.20);
+  font-weight: 500;
+  letter-spacing: 0.8px;
+}
+
+.status-pill.error {
+  background: rgba(239, 68, 68, 0.10);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.20);
+}
+
+.status-pill.warning {
+  background: rgba(245, 158, 11, 0.10);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.20);
+}
+
+/* ── Info badges (top right) ──────────────────── */
+.info-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-tag {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #71717a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.info-tag.res {
+  color: #a1a1aa;
+}
+
+/* ── Bottom bar stats ─────────────────────────── */
+.stats-left, .stats-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.stat svg {
+  width: 14px;
+  height: 14px;
+  color: #71717a;
+}
+
+.stat b {
+  color: #fff;
+  font-weight: 600;
+}
+
+.stat .unit {
+  color: #52525b;
+  font-size: 10px;
+}
+
+.stat .dim {
+  color: #3f3f46;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+}
+
+.signal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+/* ── Corner decorations ───────────────────────── */
+.corners {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+
+.corner-tl {
+  top: 8px; left: 8px;
+  border-top: 2px solid rgba(239, 68, 68, 0.45);
+  border-left: 2px solid rgba(239, 68, 68, 0.45);
+  border-radius: 4px 0 0 0;
+}
+
+.corner-tr {
+  top: 8px; right: 8px;
+  border-top: 2px solid rgba(239, 68, 68, 0.45);
+  border-right: 2px solid rgba(239, 68, 68, 0.45);
+  border-radius: 0 4px 0 0;
+}
+
+.corner-bl {
+  bottom: 8px; left: 8px;
+  border-bottom: 2px solid rgba(239, 68, 68, 0.45);
+  border-left: 2px solid rgba(239, 68, 68, 0.45);
+  border-radius: 0 0 0 4px;
+}
+
+.corner-br {
+  bottom: 8px; right: 8px;
+  border-bottom: 2px solid rgba(239, 68, 68, 0.45);
+  border-right: 2px solid rgba(239, 68, 68, 0.45);
+  border-radius: 0 0 4px 0;
+}
+
+/* ── Crosshair center ─────────────────────────── */
+.crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.5);
+}
+
+.crosshair::before {
+  width: 1px;
+  height: 24px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.crosshair::after {
+  width: 24px;
+  height: 1px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.crosshair-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+}
+
+/* ── Watermark ────────────────────────────────── */
+.watermark {
+  position: fixed;
+  bottom: 52px;
+  left: 20px;
+  z-index: 8;
+  pointer-events: none;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.06);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ── Side labels ──────────────────────────────── */
+.side-label {
+  position: fixed;
+  z-index: 8;
+  pointer-events: none;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.08);
+  font-weight: 600;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+.side-label-left {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.side-label-right {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── Animations ───────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+}
